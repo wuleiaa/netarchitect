@@ -257,14 +257,14 @@ if not ai_base_url.rstrip("/").endswith("/v1"):
     st.error(f"❌ **AI_BASE_URL 格式错误**\n当前值: `{ai_base_url}`\n✅ 正确格式: `https://api.deepseek.com/v1`\n（必须包含 `/v1` 后缀）")
     st.stop()
 
-# 安全初始化（使用 hasattr 避免 [5] 中的 TypeError）
+"""# 安全初始化（使用 hasattr 避免 [5] 中的 TypeError）
 if not hasattr(st.session_state, "ai_engine"):
     try:
         st.session_state.ai_engine = NetworkArchitectAI()
     except Exception as e:
         st.error(f"❌ AI 引擎初始化失败: {str(e)}")
         st.info("请检查 Secrets 中的密钥和 URL 是否正确")
-        st.stop()
+        st.stop()"""
 
 # 2. 初始化 AI
 if "ai_engine" not in st.session_state:
