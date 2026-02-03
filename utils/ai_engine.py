@@ -8,11 +8,28 @@ load_dotenv()
 
 class NetworkArchitectAI:
     def __init__(self):
-        # 初始化客户端
-        self.client = OpenAI(
-            api_key=os.getenv("AI_API_KEY"),
-            base_url=os.getenv("AI_BASE_URL")
-        )
+        api_key = os.getenv("AI_API_KEY")
+        base_url = os.getenv("AI_BASE_URL")
+
+        # 二次验证（防御性编程）
+        if not api_key or not base_url:
+            raise ValueError("环境变量 AI_API_KEY 或 AI_BASE_URL 未设置")
+        if not base_url.rstrip("/").endswith("/v1"):
+            raise ValueError(f"AI_BASE_URL 必须以 /v1 结尾，当前值: {base_url}")
+
+        try:
+            self.client = OpenAI(
+                api_key=api_key,
+                base_url=base_url  # 确保是 https://api.deepseek.com/v1
+            )
+        except Exception as e:
+            # 提供可操作的错误信息（参考知识库 [3][7]）
+            if "401" in str(e) or "authentication" in str(e).lower():
+                raise RuntimeError("API 密钥无效或已过期，请检查 Secrets 中的 AI_API_KEY") from e
+            elif "base_url" in str(e).lower() or "invalid url" in str(e).lower():
+                raise RuntimeError(f"base_url 格式错误: {base_url}。必须为 https://api.deepseek.com/v1") from e
+            else:
+                raise RuntimeError(f"OpenAI 客户端初始化失败: {str(e)}") from e
 
     def get_diagnostic_response(self, user_code, user_thought, topic):
         """

@@ -2,7 +2,6 @@ from utils.db_helper import get_db_path  # 仅此一处导入
 import streamlit as st
 from utils.ai_engine import NetworkArchitectAI
 from datetime import datetime  # 导入 datetime 类
-
 # ====== 新增：数据库初始化 ======
 import sqlite3
 import hashlib
@@ -127,6 +126,12 @@ st.set_page_config(
     layout="wide"
 )
 
+
+
+
+
+
+
 # ========== CSS 样式注入 (浅绿色背景 + 细节优化) ==========
 
 st.html("""
@@ -229,6 +234,31 @@ button[kind="primary"]:disabled {
 }
 </style>
 """)
+
+# 检查环境变量（关键！Streamlit Cloud 不读 .env）
+ai_api_key = os.getenv("AI_API_KEY")
+ai_base_url = os.getenv("AI_BASE_URL")
+
+# 严格验证
+if not ai_api_key:
+    st.error("❌ **AI_API_KEY 未配置**\n请在 Streamlit Cloud → Manage app → Secrets 中添加：\n`AI_API_KEY = sk-你的密钥`")
+    st.stop()
+if not ai_base_url:
+    st.error("❌ **AI_BASE_URL 未配置**\n请在 Secrets 中添加：\n`AI_BASE_URL = https://api.deepseek.com/v1`")
+    st.stop()
+if not ai_base_url.rstrip("/").endswith("/v1"):
+    st.error(f"❌ **AI_BASE_URL 格式错误**\n当前值: `{ai_base_url}`\n✅ 正确格式: `https://api.deepseek.com/v1`\n（必须包含 `/v1` 后缀）")
+    st.stop()
+
+# 安全初始化（使用 hasattr 避免 [5] 中的 TypeError）
+if not hasattr(st.session_state, "ai_engine"):
+    try:
+        st.session_state.ai_engine = NetworkArchitectAI()
+    except Exception as e:
+        st.error(f"❌ AI 引擎初始化失败: {str(e)}")
+        st.info("请检查 Secrets 中的密钥和 URL 是否正确")
+        st.stop()
+
 # 2. 初始化 AI
 if "ai_engine" not in st.session_state:
     st.session_state.ai_engine = NetworkArchitectAI()
