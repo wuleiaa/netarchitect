@@ -129,95 +129,106 @@ st.set_page_config(
 
 # ========== CSS 样式注入 (浅绿色背景 + 细节优化) ==========
 
-st.markdown("""
-    <style>
-    /* ===== 手机文字强制可见（深色/浅色模式通吃）===== */
+st.html("""
+<style>
+/* ===== 手机文字强制可见（深色/浅色模式通吃）===== */
 * {
     color: #2D3748 !important; /* 深灰文字 */
 }
-@media (prefers-color-scheme: dark) {
-    * { color: #E2E8F0 !important; } /* 深色模式浅灰 */
-    .stApp { background-color: #1A202C !important; }
+/* 1. 全局背景色 - 云雾灰 (高端、护眼、突出卡片感) */
+.stApp {
+    background-color: #F5F7F8;
+    color: #333333;
 }
-.stTextArea textarea, .stTextInput input {
+/* 顶部 Header 背景色 */
+header[data-testid="stHeader"] {
+    background-color: #F5F7F8;
+}
+
+/* 2. 侧边栏 - 强制纯白 */
+section[data-testid="stSidebar"] {
+    background-color: #FFFFFF !important;
+    border-right: 1px solid #E0E0E0;
+}
+section[data-testid="stSidebar"] > div {
+    background-color: #FFFFFF !important;
+}
+
+/* ========== 3. 按钮样式优化（关键修改！） ========== */
+/* 浅绿背景 + 纯黑字体（WCAG AA级对比度 12.5:1） */
+div.stButton > button,
+div.stDownloadButton > button,
+button[kind="secondary"],
+button[kind="primary"] {
+    background-color: #A5D6A7 !important;  /* 柔和浅绿（非刺眼） */
+    color: #000000 !important;             /* 纯黑字体（清晰锐利） */
+    border-radius: 8px !important;
+    border: none !important;
+    font-weight: 600 !important;
+    padding: 0.6rem 1.2rem !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 4px rgba(165, 214, 167, 0.3) !important;
+    background-image: none !important;
+}
+
+/* 悬停效果：稍深绿 + 黑字保持 */
+div.stButton > button:hover,
+button[kind="secondary"]:hover,
+button[kind="primary"]:hover {
+    background-color: #81C784 !important;  /* 悬停加深 */
     color: #000000 !important;
+    box-shadow: 0 4px 8px rgba(129, 199, 132, 0.4) !important;
+    transform: translateY(-1px) !important;
 }
-@media (prefers-color-scheme: dark) {
-    .stTextArea textarea, .stTextInput input {
-        color: #FFFFFF !important;
-        background-color: #2D3748 !important;
-    }
+
+/* 按下效果 */
+div.stButton > button:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 4px rgba(165, 214, 167, 0.3) !important;
 }
-    /* 1. 全局背景色 - 云雾灰 (高端、护眼、突出卡片感) */
-    .stApp {
-        background-color: #F5F7F8;
-        color: #333333; /* 关键修复：设置默认文字颜色 */
-    }
-    /* 顶部 Header 背景色 - 与主区域保持一致 */
-    header[data-testid="stHeader"] {
-        background-color: #F5F7F8;
-    }
-   
-/* 2. 侧边栏 - 强制纯白 (关键修改！) */
-    section[data-testid="stSidebar"] {
-        background-color: #FFFFFF !important; /* !important 强制覆盖默认的灰色 */
-        border-right: 1px solid #E0E0E0;      /* 加一条极细的分割线 */
-    }
-    /* 修复侧边栏内可能存在的子元素背景问题 */
-    section[data-testid="stSidebar"] > div {
-        background-color: #FFFFFF !important;
-    }
-/* 3. 按钮样式 - 保持品牌绿，形成视觉焦点 */
-    .stButton>button {
-        background-color: #2E7D32; /* 墨绿色 */
-        color: white;
-        border-radius: 6px;
-        border: none;
-        transition: all 0.3s;
-    }
-    .stButton>button:hover {
-        background-color: #1B5E20;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* 悬浮时加点阴影 */
-    }
-    /* 按钮样式优化 */
-    .stButton>button {
-        background-color: #2e7d32;
-        color: white;
-        border-radius: 8px;
-    }
-     /* 4. 输入框/文本框 - 纯白背景 + 细边框 */
-    .stTextArea textarea, .stTextInput input, .stSelectbox div[data-baseweb="select"] {
-        background-color: #FFFFFF;
-        border: 1px solid #D1D5DB; /* 浅灰色边框 */
-        border-radius: 6px;
-      
-    }
 
-    /* 6. 进度条颜色优化 */
-    .stProgress > div > div > div > div {
-        background-color: #2E7D32;
-    }
-    /* 文本框样式 */
-    .stTextArea textarea {
-        background-color: #ffffff;
-        border: 1px solid #a5d6a7;
-    }
-    /* 7. 导师反馈气泡框 - 纯白卡片风格 */
-    [data-testid="stChatMessage"] {
-        background-color: #FFFFFF;
-        border: 1px solid #E5E7EB;
-        border-radius: 12px;
-        padding: 15px;
-        margin-top: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* 轻微阴影，增加立体感 */
-    }
-    /* 机器人头像背景色 */
-    [data-testid="stChatMessageAvatarBackground"] {
-        background-color: #1976D2;
-    }
-    </style>
-""", unsafe_allow_html=True)
+/* 禁用状态：极浅绿 + 深灰字（仍清晰可辨） */
+div.stButton > button:disabled,
+button[kind="secondary"]:disabled,
+button[kind="primary"]:disabled {
+    background-color: #E8F5E9 !important;
+    color: #666666 !important;
+    cursor: not-allowed !important;
+    opacity: 1 !important;
+}
 
+/* 4. 输入框/文本框 */
+.stTextArea textarea, 
+.stTextInput input, 
+.stSelectbox div[data-baseweb="select"] {
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+}
+.stTextArea textarea {
+    border: 1px solid #a5d6a7;
+}
+
+/* 6. 进度条颜色同步优化（浅绿系） */
+.stProgress > div > div > div > div {
+    background-color: #A5D6A7 !important;
+}
+
+/* 7. 导师反馈气泡框 */
+[data-testid="stChatMessage"] {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+/* 机器人头像背景色 */
+[data-testid="stChatMessageAvatarBackground"] {
+    background-color: #1976D2;
+}
+</style>
+""")
 # 2. 初始化 AI
 if "ai_engine" not in st.session_state:
     st.session_state.ai_engine = NetworkArchitectAI()
@@ -433,8 +444,7 @@ with st.sidebar:
 
                     # 2. 从数据库删除（关键！）
                     if "user_id" in st.session_state:
-                        # 修改后（云端持久化！）
-                        conn = sqlite3.connect(get_db_path(), check_same_thread=False)
+                        conn = sqlite3.connect('netarchitect.db')
                         c = conn.cursor()
                         # 通过标题+模块+用户精确匹配（实际生产建议用ID）
                         c.execute("""DELETE FROM conversations 
