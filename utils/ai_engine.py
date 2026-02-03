@@ -1,3 +1,13 @@
+# ====== 必须放在最最顶部！清除代理冲突 ======
+import os
+# 删除所有可能触发代理的环境变量（关键！）
+for proxy_var in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 'OPENAI_PROXY']:
+    if proxy_var in os.environ:
+        del os.environ[proxy_var]
+# ============================================
+
+
+
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
