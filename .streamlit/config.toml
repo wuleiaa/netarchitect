@@ -1,0 +1,7 @@
+[server]
+address = "0.0.0.0"  # 监听所有网卡
+port = 8501
+headless = true      # 无浏览器模式（服务器部署必需）
+
+[browser]
+gatherUsageStats = false
