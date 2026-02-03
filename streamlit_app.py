@@ -1,3 +1,10 @@
+import os
+for proxy_var in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 'OPENAI_PROXY']:
+    if proxy_var in os.environ:
+        del os.environ[proxy_var]
+# ===============================================
+
+
 from utils.db_helper import get_db_path  # 仅此一处导入
 import streamlit as st
 from utils.ai_engine import NetworkArchitectAI
