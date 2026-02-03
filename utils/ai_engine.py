@@ -1,13 +1,3 @@
-# ====== 必须放在最最顶部！清除代理冲突 ======
-import os
-# 删除所有可能触发代理的环境变量（关键！）
-for proxy_var in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 'OPENAI_PROXY']:
-    if proxy_var in os.environ:
-        del os.environ[proxy_var]
-# ============================================
-
-
-
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -15,11 +5,18 @@ from dotenv import load_dotenv
 # 加载环境变量
 load_dotenv()
 
-
+import streamlit as st # 新增导入
 class NetworkArchitectAI:
     def __init__(self):
-        api_key = os.getenv("AI_API_KEY")
-        base_url = os.getenv("AI_BASE_URL")
+        # --- 修改开始：兼容云端 Secrets 和本地 .env ---
+        # 优先尝试从 Streamlit Secrets 读取，如果报错或不存在，则尝试从 os.getenv 读取
+        try:
+            api_key = st.secrets["AI_API_KEY"]
+            base_url = st.secrets["AI_BASE_URL"]
+        except (FileNotFoundError, KeyError):
+            api_key = os.getenv("AI_API_KEY")
+            base_url = os.getenv("AI_BASE_URL")
+        # --- 修改结束 ---
 
         # 二次验证（防御性编程）
         if not api_key or not base_url:
